@@ -1,0 +1,95 @@
+---
+title: "Renewables and Frequency"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+In this file, we import operating grid frequency data (taken every second for January 2021) and historical demand and generation data for 2021 (reported by 39 minute trading interval). The goal is to examine the relationship between the percentage of total power output given by renewables and the standard deviation of grid frequency.
+
+```{r}
+freq <- read.csv("Frequency_2021.csv")
+demand1 <- read.csv("Demand_Jan_2021.csv")
+```
+
+Next we remove nodal flow variables to only include demand and generation and remove data points outside of the January range.
+
+```{r}
+demand1 <- demand1[-c(1488:length(demand1$SETTLEMENT_DATE)+1),]
+demand <- subset(demand1, select = c(SETTLEMENT_PERIOD:EMBEDDED_SOLAR_CAPACITY))
+demand <- subset(demand, select = -c(EMBEDDED_SOLAR_CAPACITY,EMBEDDED_WIND_CAPACITY))
+```
+
+As expected, with solar power during the day, the share of renewable generation increases in the daylight hours, reaching a maximum at around noon.
+
+```{r}
+demand$renewshare <- (demand$EMBEDDED_WIND_GENERATION+demand$EMBEDDED_SOLAR_GENERATION)/(demand$TSD)
+plot(demand $SETTLEMENT_PERIOD[1:48],demand$renewshare[1:48], main="Renewable Generation as a Function of Time for 1/1")
+```
+Now for the frequency data. We would like to find the standard deviation of the grid frequency during each settlement period and plot this against the time series renewable energy fraction.
+
+```{r}
+for(i in 0:((length(freq$f)/1800)-1)){
+  demand$stdev1[i+1] <- sd(freq$f[(i*1800+1):((i+1)*1800)])
+}
+```
+
+There appears to be no observable relationship between frequency standard deviation and renewable share in the grid.
+
+```{r}
+demand$renewshareND <- (demand$EMBEDDED_WIND_GENERATION+demand$EMBEDDED_SOLAR_GENERATION)/(demand$ND)
+plot(demand$renewshareND,demand$stdev1,main="Frequency Variability as a Function of Renewable Input (ND)")
+```
+```{r}
+plot(demand$SETTLEMENT_PERIOD,demand$stdev1)
+```
+
+
+Plot standard deviation over time and the distribution of standard deviations.
+
+```{r}
+par(mfrow=c(1,2))
+plot(demand$SETTLEMENT_PERIOD[1:48],demand$stdev1[1:48])
+hist(demand$stdev1)
+```
+Now we try plotting frequency sd as a function of renewable input at the same settlement period.
+
+```{r}
+toBeKept<-which(demand$SETTLEMENT_PERIOD==28)
+demand2<-demand[toBeKept,]
+```
+
+```{r}
+plot(demand2$renewshareND,demand2$stdev1,main="Frequency Variability as a Function of Renewable Input (ND)")
+```
+
+```{r}
+library(corrplot)
+```
+
+```{r}
+corrplot(cor(demand))
+cor(demand)
+```
+Plotting frequency as a function of time.
+
+```{r}
+t1=3600*12
+t2=3600*15
+plot(c(1:10800)/3600,freq$f[1:10800],type="l")
+plot(c(t1:t2)/3600,freq$f[t1:t2],type="l")
+```
+
+Questions
+
+1. Why is standard deviation not correlated with renewable input? 
+2. What would standard deviation even be correlated with to begin with?
+
+Further
+
+1. Is the size of the market jump correlated with renewable input? Probably not because electricity is being purchased from generators (??)
+

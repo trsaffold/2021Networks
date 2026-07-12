@@ -1,0 +1,117 @@
+---
+title: "Data Analysis 3/1"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cars}
+freq <- read.csv("freq_2020.csv")
+demand <- read.csv("Demand_2020.csv")
+```
+
+```{r}
+#Finding Standard deviation for 16s around the market jumps every 4 hours
+len=length(freq[,1])/14400
+for(i in 1:len){
+  low=14400*i-30
+  high=14400*i+30
+  freq$jump_std[i]=sd(freq$f[low:high])
+}
+```
+
+Size of Market Noise Jump Time Series
+
+```{r}
+#Plotting frequency standard deviation over time. 1 on the x-axis corresponds to days (because c(1:60) corresponds to 60 periods of 4 hours, or 10 days.
+
+periods=366*6
+plot((1/6)*c(1:periods),freq$jump_std[1:periods],type="l",xlab="Day",ylab="Market Jump Standard Deviation")
+```
+
+
+```{r}
+#Plotting jump sd over the course of 
+periods=10*6
+plot((1/6)*c(1:periods),freq$jump_std[1:periods],type="l",xlab="Day",ylab="Market Jump Standard Deviation")
+```
+
+```{r}
+a=12*3600
+plot(freq$f[1:a])
+```
+
+
+```{r}
+periods=366*6
+hist(freq$jump_std[1:periods],main="Histogram of Market Jump Standard Deviations")
+```
+
+```{r}
+demand$renewshareND <- (demand$EMBEDDED_WIND_GENERATION+demand$EMBEDDED_SOLAR_GENERATION)/(demand$ND)
+plot(demand$renewshareND[1:periods],freq$jump_std[1:periods])
+```
+
+
+```{r}
+len=length(freq[,1])/86400
+for(i in 1:len){
+  low=86400*i-86399
+  high=84600*i+86399
+  freq$day_std[i]=sd(freq$f[low:high])
+}
+```
+
+#Now Looking at Daily Demand and Frequency:
+
+Time series of daily frequency standard deviation
+
+```{r}
+plot(c(1:366),freq$day_std[1:366],type="l",xlab="Day",ylab="Overall Daily Frequency Standard Deviation")
+```
+
+```{r}
+hist(freq$day_std[1:366],main="Histogram of Daily Frequency Sd")
+```
+
+
+```{r}
+len=length(demand[,1])/48
+for(i in 1:len){
+  low=48*i-47
+  high=48*i+47
+  demand$daily_demand_std[i]=sd(demand$ND[low:high])
+}
+```
+
+Time series of daily demand (ND)
+
+```{r}
+hist(demand$daily_demand_std[1:366],prob=TRUE,breaks=30)
+curve(dnorm(x, mean=mean(demand$daily_demand_std),sd=sd(demand$daily_demand_std)), col="darkblue", lwd=2, add=TRUE, yaxt="n")
+```
+```{r}
+plot(c(1:366),demand$daily_demand_std[1:366],type="l")
+```
+Daily frequency standard deviation vs. Daily demand standard deviation.
+
+```{r}
+plot(demand$daily_demand_std[1:366],(freq$day_std[1:366]))
+```
+
+
+```{r}
+pdf("rplot.pdf") 
+hist(freq$f,prob=TRUE,breaks=100)
+curve(dnorm(x, mean=mean(freq$f), sd=sd(freq$f)), 
+      col="darkblue", lwd=2, add=TRUE, yaxt="n",main="Frequency Histogram")
+dev.off() 
+```
+
+```{r}
+f=24*3600*31
+hist(freq$f[1:f],prob=TRUE,breaks=20)
+```
+

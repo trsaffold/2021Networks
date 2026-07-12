@@ -1,0 +1,56 @@
+---
+title: "Market Jump Distribution"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Finding Market Frequency Jump Distribution
+
+```{r}
+freq19j<-read.csv("Jan19.csv")
+freq19mar<-read.csv("Mar19.csv")
+freq19m<-read.csv("May19.csv")
+freq19jul<-read.csv("Jul19.csv")
+```
+
+```{r}
+#Finding jump size (10s around each jump)
+intlength=30*60
+len1=length(freq19m$f)/intlength
+for (i in 1:len){
+  low=intlength*i
+  high=intlength*i+5
+  freq19m$jump[i]=freq19m$f[high]-freq19m$f[low]
+}
+```
+
+```{r}
+n=0*48
+p=20
+plot(freq19m$X[(n*intlength-p):(n*intlength+p)],freq19m$f[(n*intlength-p):(n*intlength+p)],type="l")
+```
+```{r}
+hist(freq19m$jump[1:len1])
+```
+
+Do it again for July
+
+```{r}
+#Finding jump size (10s around each jump)
+len2=length(freq19jul$f)/intlength
+for (i in 1:len){
+  low=intlength*i
+  high=intlength*i+5
+  freq19jul$jump[i]=freq19jul$f[high]-freq19jul$f[low]
+}
+```
+
+```{r}
+hist(freq19jul$jump[1:len2])
+summary(freq19jul$jump[1:len2])
+sd(freq19jul$jump[1:len2],na.rm=TRUE)
+```
+

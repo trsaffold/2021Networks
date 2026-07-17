@@ -11,26 +11,19 @@ The central question is:
 Write the noise vector as
 
 ```text
-\eta(t)=
-\begin{pmatrix}
-\eta_1(t)\\
-\vdots\\
-\eta_N(t)
-\end{pmatrix},
+η(t) = [η₁(t), ..., η_N(t)]ᵀ
 ```
 
 with
 
 ```text
-\langle \eta(t)\rangle=0
+<η(t)> = 0
 ```
 
 and
 
 ```text
-\langle \eta(t)\eta(t')^T\rangle
-=
-C\,\delta(t-t').
+<η(t) η(t')ᵀ> = C δ(t - t')
 ```
 
 The matrix `C` is the noise covariance matrix. Its diagonal entries specify the variance applied to each oscillator, while its off-diagonal entries specify the correlations between the noise inputs.
@@ -46,22 +39,15 @@ The optimization problem is therefore not to remove noise, but to choose an admi
 The paper uses the noisy network Kuramoto model
 
 ```text
-\dot{\theta}_i
-=
-\omega_i
-+
-\sum_{j=1}^{N}
-K_{ij}\sin(\theta_j-\theta_i)
-+
-\eta_i(t).
+dθᵢ/dt = ωᵢ + Σⱼ Kᵢⱼ sin(θⱼ - θᵢ) + ηᵢ(t)
 ```
 
 Here:
 
-- `\theta_i(t)` is the phase of oscillator `i`.
-- `\omega_i` is its natural frequency.
-- `K_{ij}` is the coupling strength from oscillator `j` to oscillator `i`.
-- `\eta_i(t)` is the Gaussian white-noise input.
+- `θᵢ(t)` is the phase of oscillator `i`.
+- `ωᵢ` is its natural frequency.
+- `Kᵢⱼ` is the coupling strength from oscillator `j` to oscillator `i`.
+- `ηᵢ(t)` is the Gaussian white-noise input.
 
 The coupling depends only on phase differences, so adding the same phase to every oscillator does not change the dynamics.
 
@@ -70,36 +56,19 @@ The coupling depends only on phase differences, so adding the same phase to ever
 The sine interaction is not the only possible coupling law. A general phase-reduced oscillator network can be written as
 
 ```text
-\dot{\theta}_i
-=
-\omega_i
-+
-\sum_j \Gamma_{ij}(\theta_j-\theta_i)
-+
-\eta_i(t),
+dθᵢ/dt = ωᵢ + Σⱼ Γᵢⱼ(θⱼ - θᵢ) + ηᵢ(t)
 ```
 
-where each `2\pi`-periodic coupling function can be expanded in a Fourier series:
+where each `2π`-periodic coupling function can be expanded in a Fourier series:
 
 ```text
-\Gamma_{ij}(\phi)
-=
-a_{ij,0}
-+
-\sum_{m=1}^{\infty}
-\left[
-a_{ij,m}\cos(m\phi)
-+
-b_{ij,m}\sin(m\phi)
-\right].
+Γᵢⱼ(φ) = aᵢⱼ,₀ + Σₘ₌₁..∞ [aᵢⱼ,ₘ cos(mφ) + bᵢⱼ,ₘ sin(mφ)]
 ```
 
 The Kuramoto model retains only the leading sinusoidal component:
 
 ```text
-\Gamma_{ij}(\phi)
-\approx
-K_{ij}\sin\phi.
+Γᵢⱼ(φ) ≈ Kᵢⱼ sin(φ)
 ```
 
 It is therefore the first Fourier-harmonic approximation to a broader class of weakly coupled phase-oscillator models.
@@ -109,22 +78,14 @@ It is therefore the first Fourier-harmonic approximation to a broader class of w
 The same noise-covariance framework can be applied to other oscillator dynamics. In power-grid models, for example, one commonly uses the second-order swing equation
 
 ```text
-M_i\ddot{\theta}_i
-+
-D_i\dot{\theta}_i
-=
-P_i
-+
-\sum_j K_{ij}\sin(\theta_j-\theta_i)
-+
-\eta_i(t).
+Mᵢ d²θᵢ/dt² + Dᵢ dθᵢ/dt = Pᵢ + Σⱼ Kᵢⱼ sin(θⱼ - θᵢ) + ηᵢ(t)
 ```
 
 Here:
 
-- `M_i` is inertia.
-- `D_i` is damping.
-- `P_i` is the net mechanical or electrical power injection.
+- `Mᵢ` is inertia.
+- `Dᵢ` is damping.
+- `Pᵢ` is the net mechanical or electrical power injection.
 
 The Kuramoto equation is first order in phase, whereas the swing equation includes angular velocity as an additional state variable. The optimization logic remains similar: linearize the chosen dynamics around a synchronized operating state, determine how noise covariance propagates into state covariance, and optimize the resulting synchronization measure.
 
@@ -135,39 +96,26 @@ The Kuramoto equation is first order in phase, whereas the swing equation includ
 A valid covariance matrix must satisfy
 
 ```text
-C=C^T
+C = Cᵀ
+C ⪰ 0
 ```
 
-and
+The reason is that every linear combination of the noise variables must have nonnegative variance. For any vector `a`, the scalar random input is
 
 ```text
-C\succeq 0.
+aᵀη
 ```
 
-The reason is that every linear combination of the noise variables must have nonnegative variance. For any vector `a`,
+Its variance is
 
 ```text
-a^T\eta
-```
-
-is a scalar random input. Its variance is
-
-```text
-\operatorname{Var}(a^T\eta)
-=
-\left\langle
-(a^T\eta)^2
-\right\rangle
-=
-a^T C a.
+Var(aᵀη) = <(aᵀη)²> = aᵀ C a
 ```
 
 A variance cannot be negative, so
 
 ```text
-a^T C a\ge 0
-\qquad
-\text{for every }a.
+aᵀ C a ≥ 0 for every a
 ```
 
 This is exactly the definition of positive semidefiniteness.
@@ -175,29 +123,23 @@ This is exactly the definition of positive semidefiniteness.
 For two oscillators,
 
 ```text
-C=
-\begin{pmatrix}
-\sigma_1^2 & \rho\sigma_1\sigma_2\\
-\rho\sigma_1\sigma_2 & \sigma_2^2
-\end{pmatrix}.
+C = [ σ₁²        ρσ₁σ₂ ]
+    [ ρσ₁σ₂     σ₂²   ]
 ```
 
 The PSD condition gives
 
 ```text
-\det C
-=
-\sigma_1^2\sigma_2^2(1-\rho^2)
-\ge 0,
+det(C) = σ₁² σ₂² (1 - ρ²) ≥ 0
 ```
 
 and therefore
 
 ```text
--1\le \rho\le 1.
+-1 ≤ ρ ≤ 1
 ```
 
-The endpoints `\rho=\pm1` are singular, rank-one covariance matrices. They represent perfectly correlated or perfectly anticorrelated noise.
+The endpoints `ρ = ±1` are singular, rank-one covariance matrices. They represent perfectly correlated or perfectly anticorrelated noise.
 
 ---
 
@@ -206,53 +148,32 @@ The endpoints `\rho=\pm1` are singular, rank-one covariance matrices. They repre
 Consider two oscillators:
 
 ```text
-\dot{\theta}_1
-=
-\omega_1
-+
-\frac{K}{2}\sin(\theta_2-\theta_1)
-+
-\eta_1,
-```
-
-```text
-\dot{\theta}_2
-=
-\omega_2
-+
-\frac{K}{2}\sin(\theta_1-\theta_2)
-+
-\eta_2.
+dθ₁/dt = ω₁ + (K/2) sin(θ₂ - θ₁) + η₁
+dθ₂/dt = ω₂ + (K/2) sin(θ₁ - θ₂) + η₂
 ```
 
 Define the phase difference
 
 ```text
-\delta=\theta_1-\theta_2
+δ = θ₁ - θ₂
 ```
 
 and frequency difference
 
 ```text
-\Delta\omega=\omega_1-\omega_2.
+Δω = ω₁ - ω₂
 ```
 
 Subtracting the equations gives
 
 ```text
-\dot{\delta}
-=
-\Delta\omega
--
-K\sin\delta
-+
-\Delta\eta,
+dδ/dt = Δω - K sin(δ) + Δη
 ```
 
 where
 
 ```text
-\Delta\eta=\eta_1-\eta_2.
+Δη = η₁ - η₂
 ```
 
 Thus the synchronization of the pair depends only on the **differential noise**, not on noise in the common phase direction.
@@ -260,80 +181,41 @@ Thus the synchronization of the pair depends only on the **differential noise**,
 The differential-noise variance is
 
 ```text
-\sigma_\Delta^2
-=
-\left\langle
-(\eta_1-\eta_2)^2
-\right\rangle.
+σ²_Δ = <(η₁ - η₂)²>
 ```
 
 Expanding,
 
 ```text
-\sigma_\Delta^2
-=
-C_{11}+C_{22}-2C_{12}.
+σ²_Δ = C₁₁ + C₂₂ - 2C₁₂
 ```
 
 Writing
 
 ```text
-C_{11}=\sigma_1^2,
-\qquad
-C_{22}=\sigma_2^2,
-\qquad
-C_{12}=\rho\sigma_1\sigma_2,
+C₁₁ = σ₁²
+C₂₂ = σ₂²
+C₁₂ = ρσ₁σ₂
 ```
 
 gives
 
 ```text
-\sigma_\Delta^2
-=
-\sigma_1^2+\sigma_2^2
--
-2\rho\sigma_1\sigma_2.
+σ²_Δ = σ₁² + σ₂² - 2ρσ₁σ₂
 ```
 
 Therefore the correlation corresponding to a desired differential-noise variance is
 
 ```text
-\boxed{
-\rho^*
-=
-\frac{
-\sigma_1^2+\sigma_2^2-\sigma_{\Delta,\mathrm{opt}}^2
-}{
-2\sigma_1\sigma_2
-}
-}.
+ρ* = (σ₁² + σ₂² - σ²_Δ,opt) / (2σ₁σ₂)
 ```
 
-Here `\sigma_{\Delta,\mathrm{opt}}^2` is the effective differential-noise strength that optimizes the synchronization measure for the reduced one-dimensional phase-difference dynamics.
+Here `σ²_Δ,opt` is the effective differential-noise strength that optimizes the synchronization measure for the reduced one-dimensional phase-difference dynamics.
 
-Because a physical covariance matrix requires
-
-```text
--1\le\rho\le1,
-```
-
-the actual optimum is
+Because a physical covariance matrix requires `-1 ≤ ρ ≤ 1`, the actual optimum is
 
 ```text
-\boxed{
-\rho_{\mathrm{phys}}^*
-=
-\operatorname{clip}
-\left(
-\frac{
-\sigma_1^2+\sigma_2^2-\sigma_{\Delta,\mathrm{opt}}^2
-}{
-2\sigma_1\sigma_2
-},
--1,
-1
-\right).
-}
+ρ*_phys = clip((σ₁² + σ₂² - σ²_Δ,opt) / (2σ₁σ₂), -1, 1)
 ```
 
 ### Why Clipping Favors Extreme Covariance Matrices
@@ -343,26 +225,12 @@ Suppose the unconstrained calculation asks for an effective differential-noise v
 The allowed range is
 
 ```text
-(\sigma_1-\sigma_2)^2
-\le
-\sigma_\Delta^2
-\le
-(\sigma_1+\sigma_2)^2.
+(σ₁ - σ₂)² ≤ σ²_Δ ≤ (σ₁ + σ₂)²
 ```
 
-The lower endpoint occurs at
+The lower endpoint occurs at `ρ = 1`, and the upper endpoint occurs at `ρ = -1`.
 
-```text
-\rho=1,
-```
-
-and the upper endpoint occurs at
-
-```text
-\rho=-1.
-```
-
-If the unconstrained optimum lies below the attainable interval, clipping gives `\rho=1`. If it lies above the interval, clipping gives `\rho=-1`.
+If the unconstrained optimum lies below the attainable interval, clipping gives `ρ = 1`. If it lies above the interval, clipping gives `ρ = -1`.
 
 This explains why optimal solutions often occur at extreme covariance structures:
 
@@ -379,169 +247,101 @@ In the two-oscillator case, the boundary consists of the perfectly correlated an
 The Kuramoto order parameter is
 
 ```text
-R(t)e^{i\psi(t)}
-=
-\frac{1}{N}
-\sum_{j=1}^{N}
-e^{i\theta_j(t)}.
+R(t) e^(iψ(t)) = (1/N) Σⱼ e^(iθⱼ(t))
 ```
 
 Its squared magnitude is
 
 ```text
-R^2
-=
-\frac{1}{N^2}
-\sum_{i,j}
-\cos(\theta_i-\theta_j).
+R² = (1/N²) Σᵢⱼ cos(θᵢ - θⱼ)
 ```
 
 Interpretation:
 
-- `R=1`: all phases are equal.
-- `R\approx0`: phases are broadly dispersed.
+- `R = 1`: all phases are equal.
+- `R ≈ 0`: phases are broadly dispersed.
 - Intermediate values quantify partial synchrony.
 
 The quantity optimized in the paper is the expected squared order parameter,
 
 ```text
-\langle R^2\rangle.
+<R²>
 ```
 
 ---
 
 ## 6. Expansion Around a Phase-Locked State
 
-Assume the oscillators have reached a frequency-locked state with common angular frequency `\Omega`. Write
+Assume the oscillators have reached a frequency-locked state with common angular frequency `Ω`. Write
 
 ```text
-\theta_i(t)
-=
-\Omega t
-+
-\bar{\theta}_i
-+
-\epsilon_i(t),
+θᵢ(t) = Ωt + θ̄ᵢ + εᵢ(t)
 ```
 
 where:
 
-- `\bar{\theta}_i` is the fixed phase offset in the co-rotating frame.
-- `\epsilon_i(t)` is a small noise-induced deviation.
+- `θ̄ᵢ` is the fixed phase offset in the co-rotating frame.
+- `εᵢ(t)` is a small noise-induced deviation.
 
 The locked phases satisfy
 
 ```text
-0
-=
-\omega_i-\Omega
-+
-\sum_j
-K_{ij}\sin(\bar{\theta}_j-\bar{\theta}_i).
+0 = ωᵢ - Ω + Σⱼ Kᵢⱼ sin(θ̄ⱼ - θ̄ᵢ)
 ```
 
-The common term `\Omega t` cancels from all phase differences, so
+The common term `Ωt` cancels from all phase differences, so
 
 ```text
-R^2(\theta)
-=
-R^2(\bar{\theta}+\epsilon).
+R²(θ) = R²(θ̄ + ε)
 ```
 
-Taylor-expand around `\bar{\theta}`:
+Taylor-expand around `θ̄`:
 
 ```text
-R^2(\bar{\theta}+\epsilon)
-=
-R_0^2
-+
-J^T\epsilon
-+
-\frac{1}{2}\epsilon^T
-\left[
-\nabla^2 R^2
-\right]_{\bar{\theta}}
-\epsilon
-+
-O(\|\epsilon\|^3).
+R²(θ̄ + ε)
+≈ R₀² + Jᵀε + (1/2) εᵀ [∇²R²]_(θ̄) ε + O(||ε||³)
 ```
 
 Define
 
 ```text
-H
-=
-\frac{1}{2}
-\left[
-\nabla^2R^2
-\right]_{\bar{\theta}}.
+H = (1/2) [∇²R²]_(θ̄)
 ```
 
 Then
 
 ```text
-R^2
-\approx
-R_0^2
-+
-J^T\epsilon
-+
-\epsilon^T H\epsilon.
+R² ≈ R₀² + Jᵀε + εᵀHε
 ```
 
-At the stationary noisy state,
+At the stationary noisy state, `<ε> = 0`, so the linear term disappears:
 
 ```text
-\langle\epsilon\rangle=0,
-```
-
-so the linear term disappears:
-
-```text
-\langle R^2\rangle
-\approx
-R_0^2
-+
-\left\langle
-\epsilon^T H\epsilon
-\right\rangle.
+<R²> ≈ R₀² + <εᵀHε>
 ```
 
 Using
 
 ```text
-E
-=
-\langle\epsilon\epsilon^T\rangle,
+E = <εεᵀ>
 ```
 
 and the trace identity
 
 ```text
-\epsilon^T H\epsilon
-=
-\operatorname{tr}
-\left(
-H\epsilon\epsilon^T
-\right),
+εᵀHε = tr(Hεεᵀ)
 ```
 
 we obtain
 
 ```text
-\boxed{
-\langle R^2\rangle
-\approx
-R_0^2
-+
-\operatorname{tr}(HE).
-}
+<R²> ≈ R₀² + tr(HE)
 ```
 
-Because `R_0^2` is fixed once the deterministic operating state is fixed, maximizing synchronization at this order is equivalent to maximizing
+Because `R₀²` is fixed once the deterministic operating state is fixed, maximizing synchronization at this order is equivalent to maximizing
 
 ```text
-\operatorname{tr}(HE).
+tr(HE)
 ```
 
 ---
@@ -551,9 +351,7 @@ Because `R_0^2` is fixed once the deterministic operating state is fixed, maximi
 Insert
 
 ```text
-\theta_i
-=
-\Omega t+\bar{\theta}_i+\epsilon_i
+θᵢ = Ωt + θ̄ᵢ + εᵢ
 ```
 
 into the Kuramoto equation.
@@ -561,64 +359,37 @@ into the Kuramoto equation.
 For small deviations,
 
 ```text
-\sin\left[
-(\bar{\theta}_j+\epsilon_j)
--
-(\bar{\theta}_i+\epsilon_i)
-\right]
+sin((θ̄ⱼ + εⱼ) - (θ̄ᵢ + εᵢ))
 ```
 
 is approximated by
 
 ```text
-\sin(\bar{\theta}_j-\bar{\theta}_i)
-+
-\cos(\bar{\theta}_j-\bar{\theta}_i)
-(\epsilon_j-\epsilon_i).
+sin(θ̄ⱼ - θ̄ᵢ) + cos(θ̄ⱼ - θ̄ᵢ)(εⱼ - εᵢ)
 ```
 
-The zeroth-order terms cancel because `\bar{\theta}` is a locked solution. The remaining dynamics are
+The zeroth-order terms cancel because `θ̄` is a locked solution. The remaining dynamics are
 
 ```text
-\dot{\epsilon}_i
-=
-\sum_j
-K_{ij}
-\cos(\bar{\theta}_j-\bar{\theta}_i)
-(\epsilon_j-\epsilon_i)
-+
-\eta_i.
+dεᵢ/dt = Σⱼ Kᵢⱼ cos(θ̄ⱼ - θ̄ᵢ)(εⱼ - εᵢ) + ηᵢ
 ```
 
 Define the linearized matrix `L` by
 
 ```text
-L_{ij}
-=
-K_{ij}
-\cos(\bar{\theta}_j-\bar{\theta}_i),
-\qquad i\ne j,
+Lᵢⱼ = Kᵢⱼ cos(θ̄ⱼ - θ̄ᵢ),     i ≠ j
 ```
 
 and
 
 ```text
-L_{ii}
-=
--
-\sum_{j\ne i}
-K_{ij}
-\cos(\bar{\theta}_j-\bar{\theta}_i).
+Lᵢᵢ = -Σⱼ≠ᵢ Kᵢⱼ cos(θ̄ⱼ - θ̄ᵢ)
 ```
 
 Then
 
 ```text
-\boxed{
-\dot{\epsilon}
-=
-L\epsilon+\eta.
-}
+dε/dt = Lε + η
 ```
 
 For a stable locked state, every nontrivial eigenvalue of `L` has negative real part. One zero mode remains because a uniform phase shift does not change the physical state. This mode is removed by working in the centered or co-rotating subspace.
@@ -630,122 +401,75 @@ For a stable locked state, every nontrivial eigenvalue of `L` has negative real 
 Define the stationary covariance of the phase deviations:
 
 ```text
-E
-=
-\langle
-\epsilon(t)\epsilon(t)^T
-\rangle.
+E = <ε(t) ε(t)ᵀ>
 ```
 
 The linear stochastic dynamics are
 
 ```text
-\dot{\epsilon}
-=
-L\epsilon+\eta.
+dε/dt = Lε + η
 ```
 
 Rather than reproduce the full stochastic-calculus derivation, use the formal solution of the stable linear system. After transients have decayed,
 
 ```text
-\epsilon(t)
-=
-\int_{-\infty}^{t}
-e^{L(t-s)}
-\eta(s)\,ds.
+ε(t) = ∫ from -∞ to t of exp(L(t-s)) η(s) ds
 ```
 
 Substitute this into `E`:
 
 ```text
-E
-=
-\left\langle
-\int_{-\infty}^{t}
-e^{L(t-s)}
-\eta(s)\,ds
-\int_{-\infty}^{t}
-\eta(s')^T
-e^{L^T(t-s')}\,ds'
-\right\rangle.
+E =
+<
+  ∫ exp(L(t-s)) η(s) ds
+  ∫ η(s')ᵀ exp(Lᵀ(t-s')) ds'
+>
 ```
 
 Because the noise is white,
 
 ```text
-\langle
-\eta(s)\eta(s')^T
-\rangle
-=
-C\delta(s-s'),
+<η(s)η(s')ᵀ> = C δ(s - s')
 ```
 
 the double integral collapses to
 
 ```text
-\boxed{
-E
-=
-\int_0^\infty
-e^{Ls}
-C
-e^{L^Ts}
-\,ds.
-}
+E = ∫ from 0 to ∞ of exp(Ls) C exp(Lᵀs) ds
 ```
 
 This expression shows directly how the dynamics filter the input covariance `C` into the state covariance `E`.
 
-Now multiply by `L` on the left and `L^T` on the right:
+Now multiply by `L` on the left and `Lᵀ` on the right:
 
 ```text
-LE+EL^T
-=
-\int_0^\infty
-\left[
-Le^{Ls}Ce^{L^Ts}
-+
-e^{Ls}Ce^{L^Ts}L^T
-\right]ds.
+LE + ELᵀ =
+∫ from 0 to ∞ of [L exp(Ls) C exp(Lᵀs) + exp(Ls) C exp(Lᵀs) Lᵀ] ds
 ```
 
 The integrand is a total derivative:
 
 ```text
-\frac{d}{ds}
-\left(
-e^{Ls}Ce^{L^Ts}
-\right)
-=
-Le^{Ls}Ce^{L^Ts}
-+
-e^{Ls}Ce^{L^Ts}L^T.
+d/ds [exp(Ls) C exp(Lᵀs)]
+= L exp(Ls) C exp(Lᵀs) + exp(Ls) C exp(Lᵀs) Lᵀ
 ```
 
 Therefore,
 
 ```text
-LE+EL^T
-=
-\left[
-e^{Ls}Ce^{L^Ts}
-\right]_{s=0}^{s=\infty}.
+LE + ELᵀ = [exp(Ls) C exp(Lᵀs)] from s=0 to s=∞
 ```
 
 Stability makes the upper limit vanish, while the lower limit is `C`. Hence
 
 ```text
-\boxed{
-LE+EL^T=-C.
-}
+LE + ELᵀ = -C
 ```
 
-If the coupling is undirected and `L=L^T`, this becomes
+If the coupling is undirected and `L = Lᵀ`, this becomes
 
 ```text
-\boxed{
-LE+EL=-C.
-}
+LE + EL = -C
 ```
 
 This is the continuous Lyapunov equation.
@@ -753,11 +477,7 @@ This is the continuous Lyapunov equation.
 It gives the required link:
 
 ```text
-C
-\longrightarrow
-E
-\longrightarrow
-\langle R^2\rangle.
+C → E → <R²>
 ```
 
 The noise covariance determines the phase covariance through the linearized dynamics, and the phase covariance determines the synchronization correction through the Hessian.
@@ -769,34 +489,31 @@ The noise covariance determines the phase covariance through the linearized dyna
 The second-order synchronization objective is
 
 ```text
-\max_{C,E}
-\operatorname{tr}(HE)
+maximize tr(HE) over C and E
 ```
 
 subject to
 
 ```text
-LE+EL^T=-C.
+LE + ELᵀ = -C
 ```
 
 The covariance must satisfy
 
 ```text
-C\succeq0.
+C ⪰ 0
 ```
 
 To prevent the optimizer from increasing the total noise power without bound, fix the marginal noise variances:
 
 ```text
-C_{ii}=1
-\qquad
-\text{for all }i.
+Cᵢᵢ = 1 for all i
 ```
 
 Because the global phase mode is physically irrelevant, impose centered-frame constraints such as
 
 ```text
-C\mathbf{1}=0.
+C 1 = 0
 ```
 
 The resulting problem is a semidefinite program because:
@@ -804,7 +521,7 @@ The resulting problem is a semidefinite program because:
 - The objective is linear in `E`.
 - The Lyapunov equation is linear in `C` and `E`.
 - The diagonal and centering conditions are linear.
-- `C\succeq0` is a semidefinite-cone constraint.
+- `C ⪰ 0` is a semidefinite-cone constraint.
 
 ---
 
@@ -813,19 +530,17 @@ The resulting problem is a semidefinite program because:
 COSMO is a conic optimization solver. Its generic problem form is
 
 ```text
-\min_x
-\frac{1}{2}x^TPx+q^Tx
+minimize (1/2)xᵀPx + qᵀx
 ```
 
 subject to
 
 ```text
-Ax+s=b,
-\qquad
-s\in\mathcal{K},
+Ax + s = b,
+s ∈ K
 ```
 
-where `\mathcal{K}` is a product of cones, such as:
+where `K` is a product of cones, such as:
 
 - The zero cone for equality constraints.
 - The nonnegative orthant.
@@ -835,7 +550,7 @@ where `\mathcal{K}` is a product of cones, such as:
 Our problem is linear, so
 
 ```text
-P=0.
+P = 0
 ```
 
 Because COSMO is written in terms of vectors, symmetric matrix variables must be represented as vectors.
@@ -847,67 +562,42 @@ Because COSMO is written in terms of vectors, symmetric matrix variables must be
 For a symmetric matrix `X`, define
 
 ```text
-x=\operatorname{svec}(X),
+x = svec(X)
 ```
 
-where `\operatorname{svec}` stores the upper or lower triangular entries and scales off-diagonal terms by `\sqrt{2}`.
+where `svec` stores the upper or lower triangular entries and scales off-diagonal terms by `√2`.
 
 For example,
 
 ```text
-X=
-\begin{pmatrix}
-x_{11} & x_{12}\\
-x_{12} & x_{22}
-\end{pmatrix}
+X = [ x₁₁   x₁₂ ]
+    [ x₁₂   x₂₂ ]
 ```
 
 may be mapped to
 
 ```text
-\operatorname{svec}(X)
-=
-\begin{pmatrix}
-x_{11}\\
-\sqrt{2}x_{12}\\
-x_{22}
-\end{pmatrix}.
+svec(X) = [x₁₁, √2 x₁₂, x₂₂]ᵀ
 ```
 
-The `\sqrt{2}` scaling preserves the matrix inner product:
+The `√2` scaling preserves the matrix inner product:
 
 ```text
-\operatorname{tr}(XY)
-=
-\operatorname{svec}(X)^T
-\operatorname{svec}(Y).
+tr(XY) = svec(X)ᵀ svec(Y)
 ```
 
 Therefore,
 
 ```text
-\operatorname{tr}(HE)
-=
-\operatorname{svec}(H)^T
-\operatorname{svec}(E).
+tr(HE) = svec(H)ᵀ svec(E)
 ```
 
 Let
 
 ```text
-e=\operatorname{svec}(E),
-\qquad
-c=\operatorname{svec}(C),
-```
-
-and combine them into one decision vector:
-
-```text
-x=
-\begin{pmatrix}
-e\\
-c
-\end{pmatrix}.
+e = svec(E)
+c = svec(C)
+x = [e, c]ᵀ
 ```
 
 ---
@@ -917,61 +607,41 @@ c
 The map
 
 ```text
-E\mapsto LE+EL^T
+E ↦ LE + ELᵀ
 ```
 
 is linear. Therefore there exists a matrix `A_L` such that
 
 ```text
-\operatorname{svec}(LE+EL^T)
-=
-A_L\operatorname{svec}(E).
+svec(LE + ELᵀ) = A_L svec(E)
 ```
 
 The Lyapunov constraint becomes
 
 ```text
-A_Le+c=0.
+A_L e + c = 0
 ```
 
 Equivalently,
 
 ```text
-\begin{pmatrix}
-A_L & I
-\end{pmatrix}
-\begin{pmatrix}
-e\\
-c
-\end{pmatrix}
-=
-0.
+[A_L  I] [e, c]ᵀ = 0
 ```
 
 The objective can be written as
 
 ```text
-\max
-\begin{pmatrix}
-\operatorname{svec}(H)\\
-0
-\end{pmatrix}^T
-x.
+maximize [svec(H), 0]ᵀ x
 ```
 
 Since COSMO uses minimization, the linear objective vector is
 
 ```text
-q=
--
-\begin{pmatrix}
-\operatorname{svec}(H)\\
-0
-\end{pmatrix}.
+q = -[svec(H), 0]
 ```
 
 The PSD constraint is expressed by requiring the portion of the conic variable corresponding to `c` to lie in the semidefinite cone:
 
 ```text
-C=\operatorname{smat}(c)\succeq0.
+C = smat(c) ⪰ 0
 ```

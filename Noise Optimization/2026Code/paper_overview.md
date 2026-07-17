@@ -1,6 +1,6 @@
 # Optimizing Synchronization by Shaping Correlated Noise
 
-## 1. The problem
+## 1. The Problem
 
 Consider a network of coupled oscillators driven by Gaussian white noise. The oscillator dynamics and network couplings are assumed to be fixed. The control variable is instead the **spatial covariance structure of the noise** applied across the oscillators.
 
@@ -39,9 +39,9 @@ The optimization problem is therefore not to remove noise, but to choose an admi
 
 ---
 
-## 2. Oscillator dynamics
+## 2. Oscillator Dynamics
 
-### 2.1 Kuramoto dynamics
+### 2.1 Kuramoto Dynamics
 
 The paper uses the noisy network Kuramoto model
 
@@ -56,16 +56,16 @@ K_{ij}\sin(\theta_j-\theta_i)
 \eta_i(t).
 \]
 
-Here,
+Here:
 
-- \(\theta_i(t)\) is the phase of oscillator \(i\),
-- \(\omega_i\) is its natural frequency,
-- \(K_{ij}\) is the coupling strength from oscillator \(j\) to oscillator \(i\),
+- \(\theta_i(t)\) is the phase of oscillator \(i\).
+- \(\omega_i\) is its natural frequency.
+- \(K_{ij}\) is the coupling strength from oscillator \(j\) to oscillator \(i\).
 - \(\eta_i(t)\) is the Gaussian white-noise input.
 
 The coupling depends only on phase differences, so adding the same phase to every oscillator does not change the dynamics.
 
-### 2.2 Kuramoto as the first Fourier harmonic
+### 2.2 Kuramoto as the First Fourier Harmonic
 
 The sine interaction is not the only possible coupling law. A general phase-reduced oscillator network can be written as
 
@@ -104,7 +104,7 @@ K_{ij}\sin\phi.
 
 It is therefore the first Fourier-harmonic approximation to a broader class of weakly coupled phase-oscillator models.
 
-### 2.3 An alternative: the swing equation
+### 2.3 An Alternative: The Swing Equation
 
 The same noise-covariance framework can be applied to other oscillator dynamics. In power-grid models, for example, one commonly uses the second-order swing equation
 
@@ -120,17 +120,17 @@ P_i
 \eta_i(t).
 \]
 
-Here,
+Here:
 
-- \(M_i\) is inertia,
-- \(D_i\) is damping,
+- \(M_i\) is inertia.
+- \(D_i\) is damping.
 - \(P_i\) is the net mechanical or electrical power injection.
 
 The Kuramoto equation is first order in phase, whereas the swing equation includes angular velocity as an additional state variable. The optimization logic remains similar: linearize the chosen dynamics around a synchronized operating state, determine how noise covariance propagates into state covariance, and optimize the resulting synchronization measure.
 
 ---
 
-## 3. Why a covariance matrix must be positive semidefinite
+## 3. Why a Covariance Matrix Must Be Positive Semidefinite
 
 A valid covariance matrix must satisfy
 
@@ -144,9 +144,7 @@ and
 C\succeq 0.
 \]
 
-The reason is that every linear combination of the noise variables must have nonnegative variance.
-
-For any vector \(a\),
+The reason is that every linear combination of the noise variables must have nonnegative variance. For any vector \(a\),
 
 \[
 a^T\eta
@@ -203,7 +201,7 @@ The endpoints \(\rho=\pm1\) are singular, rank-one covariance matrices. They rep
 
 ---
 
-## 4. Two-oscillator reduction
+## 4. Two-Oscillator Reduction
 
 Consider two oscillators:
 
@@ -338,7 +336,7 @@ the actual optimum is
 }
 \]
 
-### Why clipping favors extreme covariance matrices
+### Why Clipping Favors Extreme Covariance Matrices
 
 Suppose the unconstrained calculation asks for an effective differential-noise variance outside the range realizable by any valid correlation.
 
@@ -368,15 +366,15 @@ If the unconstrained optimum lies below the attainable interval, clipping gives 
 
 This explains why optimal solutions often occur at extreme covariance structures:
 
-- the objective may prefer more or less noise in a particular collective direction than the PSD constraint permits;
-- the constrained optimum is then pushed to the boundary of the covariance set;
-- boundary points of the PSD cone are often singular or low rank.
+- The objective may prefer more or less noise in a particular collective direction than the PSD constraint permits.
+- The constrained optimum is then pushed to the boundary of the covariance set.
+- Boundary points of the PSD cone are often singular or low rank.
 
 In the two-oscillator case, the boundary consists of the perfectly correlated and perfectly anticorrelated matrices. In larger networks, the analogous phenomenon produces covariance matrices with extreme eigenvalues and often low-rank structure.
 
 ---
 
-## 5. Synchronization measure
+## 5. Synchronization Measure
 
 The Kuramoto order parameter is
 
@@ -400,9 +398,9 @@ R^2
 
 Interpretation:
 
-- \(R=1\): all phases are equal;
-- \(R\approx0\): phases are broadly dispersed;
-- intermediate values quantify partial synchrony.
+- \(R=1\): all phases are equal.
+- \(R\approx0\): phases are broadly dispersed.
+- Intermediate values quantify partial synchrony.
 
 The quantity optimized in the paper is the expected squared order parameter,
 
@@ -412,7 +410,7 @@ The quantity optimized in the paper is the expected squared order parameter,
 
 ---
 
-## 6. Expansion around a phase-locked state
+## 6. Expansion Around a Phase-Locked State
 
 Assume the oscillators have reached a frequency-locked state with common angular frequency \(\Omega\). Write
 
@@ -426,9 +424,9 @@ Assume the oscillators have reached a frequency-locked state with common angular
 \epsilon_i(t),
 \]
 
-where
+where:
 
-- \(\bar{\theta}_i\) is the fixed phase offset in the co-rotating frame,
+- \(\bar{\theta}_i\) is the fixed phase offset in the co-rotating frame.
 - \(\epsilon_i(t)\) is a small noise-induced deviation.
 
 The locked phases satisfy
@@ -548,7 +546,7 @@ Because \(R_0^2\) is fixed once the deterministic operating state is fixed, maxi
 
 ---
 
-## 7. Linearized fluctuation dynamics
+## 7. Linearized Fluctuation Dynamics
 
 Insert
 
@@ -627,7 +625,7 @@ For a stable locked state, every nontrivial eigenvalue of \(L\) has negative rea
 
 ---
 
-## 8. From noise covariance \(C\) to phase covariance \(E\)
+## 8. From Noise Covariance \(C\) to Phase Covariance \(E\)
 
 Define the stationary covariance of the phase deviations:
 
@@ -766,7 +764,7 @@ The noise covariance determines the phase covariance through the linearized dyna
 
 ---
 
-## 9. Semidefinite optimization problem
+## 9. Semidefinite Optimization Problem
 
 The second-order synchronization objective is
 
@@ -801,16 +799,16 @@ Because the global phase mode is physically irrelevant, impose centered-frame co
 C\mathbf{1}=0.
 \]
 
-The resulting problem is a semidefinite program because
+The resulting problem is a semidefinite program because:
 
-- the objective is linear in \(E\),
-- the Lyapunov equation is linear in \(C\) and \(E\),
-- the diagonal and centering conditions are linear,
+- The objective is linear in \(E\).
+- The Lyapunov equation is linear in \(C\) and \(E\).
+- The diagonal and centering conditions are linear.
 - \(C\succeq0\) is a semidefinite-cone constraint.
 
 ---
 
-## 10. What COSMO solves
+## 10. What COSMO Solves
 
 COSMO is a conic optimization solver. Its generic problem form is
 
@@ -827,12 +825,12 @@ Ax+s=b,
 s\in\mathcal{K},
 \]
 
-where \(\mathcal{K}\) is a product of cones, such as
+where \(\mathcal{K}\) is a product of cones, such as:
 
-- the zero cone for equality constraints,
-- the nonnegative orthant,
-- second-order cones,
-- positive-semidefinite cones.
+- The zero cone for equality constraints.
+- The nonnegative orthant.
+- Second-order cones.
+- Positive-semidefinite cones.
 
 Our problem is linear, so
 
@@ -844,7 +842,7 @@ Because COSMO is written in terms of vectors, symmetric matrix variables must be
 
 ---
 
-## 11. Vectorizing symmetric matrices
+## 11. Vectorizing Symmetric Matrices
 
 For a symmetric matrix \(X\), define
 
@@ -914,7 +912,7 @@ c
 
 ---
 
-## 12. Vectorizing the Lyapunov equation
+## 12. Vectorizing the Lyapunov Equation
 
 The map
 
@@ -977,131 +975,3 @@ The PSD constraint is expressed by requiring the portion of the conic variable c
 \[
 C=\operatorname{smat}(c)\succeq0.
 \]
-
-The conditions
-
-\[
-C_{ii}=1
-\]
-
-and
-
-\[
-C\mathbf{1}=0
-\]
-
-become additional rows in the affine constraint matrix.
-
-Thus the matrix optimization is converted into the vector-conic form COSMO accepts:
-
-\[
-\min_x q^Tx
-\]
-
-subject to a collection of affine equations and a PSD-cone membership constraint.
-
----
-
-## 13. Why JuMP removes the need to build \(A_L\) manually
-
-At the low-level COSMO interface, one would explicitly construct
-
-- \(x\),
-- \(q\),
-- \(A\),
-- \(b\),
-- the cone product \(\mathcal K\),
-- the `svec` representation,
-- the matrix representation of the Lyapunov operator.
-
-With JuMP, the model can instead be written in matrix form:
-
-```julia
-model = Model(COSMO.Optimizer)
-
-@variable(model, E[1:N, 1:N], Symmetric)
-@variable(model, C[1:N, 1:N], PSD)
-
-@constraint(model, L * E + E * L' + C .== 0)
-@constraint(model, [i=1:N], C[i, i] == 1)
-@constraint(model, [i=1:N], sum(C[i, j] for j in 1:N) == 0)
-
-@objective(model, Max, tr(H * E))
-```
-
-JuMP and MathOptInterface then
-
-1. identify the symmetric matrix variables,
-2. vectorize them,
-3. convert matrix inner products into vector inner products,
-4. convert the Lyapunov equation into affine constraints,
-5. represent \(C\succeq0\) as a PSD-cone constraint,
-6. pass the resulting conic problem to COSMO.
-
-Conceptually, the optimization pipeline is
-
-\[
-(K,\omega)
-\longrightarrow
-\bar{\theta}
-\longrightarrow
-L,H
-\longrightarrow
-\text{SDP in }(C,E)
-\longrightarrow
-\operatorname{svec}\text{ conic form}
-\longrightarrow
-\text{COSMO solution}.
-\]
-
----
-
-## 14. Overall interpretation
-
-The full framework separates into three maps:
-
-### Dynamics
-
-\[
-(K,\omega,\bar{\theta})
-\longrightarrow
-L.
-\]
-
-The fixed point and network determine how perturbations evolve.
-
-### Stochastic response
-
-\[
-(L,C)
-\longrightarrow
-E
-\]
-
-through
-
-\[
-LE+EL^T=-C.
-\]
-
-The dynamics transform input-noise covariance into phase covariance.
-
-### Synchronization geometry
-
-\[
-(H,E)
-\longrightarrow
-\langle R^2\rangle
-\]
-
-through
-
-\[
-\langle R^2\rangle
-\approx
-R_0^2+\operatorname{tr}(HE).
-\]
-
-The Hessian identifies which phase-fluctuation directions improve or damage synchrony.
-
-The optimizer chooses \(C\) so that, after being filtered through the network dynamics, the resulting phase covariance \(E\) places as much fluctuation as possible in directions favored by the local geometry of \(R^2\), subject to the requirement that \(C\) remain a physically valid covariance matrix.
